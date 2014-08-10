@@ -1,0 +1,78 @@
+﻿Module        = MODULE ident ";" [ImportList] DeclSeq [BEGIN StatementSeq] END [ident] ".".
+ImportList    = IMPORT [ident ":="] ident {"," [ident ":="] ident} ";".
+DeclSeq       = { CONST {ConstDecl ";" } | TYPE {TypeDecl ";"} | VAR {VarDecl ";"}}
+                {(ProcDecl | ExternalDecl | ForwardDecl) ";"}.
+ConstDecl     = IdentDef "=" ConstExpr.
+TypeDecl      = IdentDef "=" Type.
+VarDecl       = IdentList ":" Type.
+ProcDecl      = PROCEDURE [Receiver] IdentDef [FormalPars] ";" DeclSeq
+                [BEGIN StatementSeq] END [ident].
+ExternalDecl  = PROCEDURE IdentDef [FormalPars] ";"
+                EXTERNAL [IMPORT] string.
+ForwardDecl   = PROCEDURE "^" [Receiver] IdentDef [FormalPars].
+FormalPars    = ["(" [FPSection {";" FPSection}] ")"] [":" Type].
+FPSection     = [VAR] ident {"," ident} ":" Type.
+Receiver      = "(" [VAR] ident ":" ident ")".
+Type          = OberonType | NamedType | ArrayType | VectorType | RecordType
+              | PtrType | ProcType.
+OberonType    = "LONGINT" | "INTEGER" | "SHORTINT" | "BYTE" | "LONGREAL" | "REAL" 
+              | "BOOLEAN" | "SET" | "CHAR".
+NamedType     = QualIdent.
+ArrayType     = ARRAY [ConstExpr {"," ConstExpr}] OF Type.
+VectorType    = VECTOR ConstExpr OF OberonType.
+RecordType    = RECORD ["("NamedType")"] [FieldList] {";" [FieldList]} END.
+PtrType       = POINTER TO Type.
+ProcType      = PROCEDURE [FormalPars].
+FieldList     = IdentList ":" Type.
+StatementSeq  = (Terminator | Statement {";" Statement} [";" Terminator]) [";"].
+Statement     = Assignment | InvocStmnt | IfThenElse | SwitchCase
+              | WhileLoop | RepeatUntil | ForLoop | UncondLoop | WithDo.
+Terminator    = Exit | Return.
+Assignment    = Designator ":=" Expr.
+InvocStmnt	  = Designator.
+IfThenElse    = IF Expr THEN StatementSeq {ELSIF Expr THEN StatementSeq} [ELSE StatementSeq] END.
+SwitchCase    = CASE Expr OF [Case] {"|" [Case]} [ELSE StatementSeq] END.
+WhileLoop     = WHILE Expr DO StatementSeq END.
+RepeatUntil   = REPEAT StatementSeq UNTIL Expr.
+ForLoop       = FOR ident ":=" Expr TO Expr [BY ConstExpr] DO StatementSeq END.
+UncondLoop    = LOOP StatementSeq END.
+WithDo        = WITH WithCase {"|" WithCase} [ELSE StatementSeq] END.
+WithCase      = QualIdent ":" NamedType DO StatementSeq.
+Exit          = EXIT.
+Return        = RETURN [Expr].
+Case          = CaseLabels {"," CaseLabels} ":" StatementSeq.
+CaseLabels    = ConstExpr [".." ConstExpr].
+ConstExpr     = Expr.
+Expr          = SimpleExpr [Relation SimpleExpr].
+SimpleExpr    = Term {AddOp Term}.
+Term          = Factor {MulOp Factor}.
+Factor        = Designator | number | Vector | character | string | Bool | Nil | Set
+              | "(" Expr ")" | Unary.
+Nil           = NIL.
+Unary         = ("+" | "-" | "~") Factor.
+Bool          = "TRUE" | "FALSE".
+Set           = "{" [Element {"," Element}] "}".
+Element       = Expr [".." Expr].
+Relation!     = "=" | "#" | "<" | "<=" | ">" | ">=" | IN.
+AddOp!        = "+" | "-" | OR.
+MulOp!        = "*" | "/" | DIV | MOD | "&".
+Designator    = QualIdent {MemberAccess | Indexer | PtrResolve | Invocation | TypeTest}.
+MemberAccess  = "." ident.
+Indexer       = "[" ExprList "]".
+PtrResolve    = "^".
+TypeTest      = IS QualIdent.
+Invocation    = "(" [ExprList] ")".
+ExprList      = Expr {"," Expr}.
+IdentList     = IdentDef {"," IdentDef}.
+QualIdent     = [ident "."] ident.
+IdentDef      = ident ["*" | "-"].
+character     = digit {hexDigit} "X".
+Vector        = "<" ExprList ">".
+number        = integer | real.
+integer       = ["-"] digit {digit} | digit {hexDigit} "H".
+real          = ["-"] digit {digit} "." {digit} [scaleFactor].
+scaleFactor!  = ("E" | "D") ["+" | "-"] digit {digit}.
+hexDigit!     = digit | "A" | "B" | "C" | "D" | "E" | "F".
+digit!        = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9".
+commentOpen!  = "(*".
+commentClose! = "*)".

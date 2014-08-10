@@ -1,0 +1,9 @@
+var a : Integer;
+var b : Integer;
+
+func main() : Integer
+{
+    var c : Integer = 5;
+
+    return 0;
+}

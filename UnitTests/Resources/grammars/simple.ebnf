@@ -1,0 +1,32 @@
+﻿Program     = {Declaration}.
+Declaration = VarDecl | FuncDecl.
+
+Delim = ";".
+
+VarDecl = "var" ParamDecl ["=" Expression] Delim.
+
+ParamDecl = ident ":" Type.
+ParamSeq  = "(" [ParamDecl {"," ParamDecl}] ")"
+FuncDecl  = "func" ident ParamSeq ":" TypeSeq "{" {Statement} "}"
+
+ReturnType = "void" | TypeSeq.
+TypeSeq    = Type {"," Type}.
+Type       = "Integer" | ident ["<" Type ">"].
+
+Statement  = VarDecl | Assignment | Invocation | Return.
+Assignment = IdentSeq "=" ExpressionSeq.
+Invocation = ident "(" [ExpressionSeq] ")".
+Return     = "return" [ExpressionSeq].
+
+Null       = "null".
+
+IdentSeq = ident {"," ident}.
+
+ExpressionSeq = Expression {"," Expression}.
+Expression    = Null | integer | Invocation.
+
+integer = ["-"] digit {digit}.
+digit! = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9".
+
+commentOpen!  = "/*".
+commentClose! = "*/".
