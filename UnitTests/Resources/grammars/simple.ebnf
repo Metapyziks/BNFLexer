@@ -6,8 +6,8 @@ Delim = ";".
 VarDecl = "var" ParamDecl ["=" Expression] Delim.
 
 ParamDecl = ident ":" Type.
-ParamSeq  = "(" [ParamDecl {"," ParamDecl}] ")"
-FuncDecl  = "func" ident ParamSeq ":" TypeSeq "{" {Statement} "}"
+ParamSeq  = "(" [ParamDecl {"," ParamDecl}] ")".
+FuncDecl  = "func" ident ParamSeq ":" TypeSeq "{" {Statement} "}".
 
 ReturnType = "void" | TypeSeq.
 TypeSeq    = Type {"," Type}.
